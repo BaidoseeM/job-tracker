@@ -59,4 +59,5 @@ async function printAll() : Promise<void>
 
 await printAll();
 console.log(await countByStatus("Applied"));
+console.log("Yes");
 await pool.end();
