@@ -12,15 +12,22 @@ interface CardProps
   company : string , 
   status : string ,
   onDelete : ()=> void,
+  onStatusChange: (newStatus: string) => void,
 }
 
-function ApplicationCard({company,status,onDelete}:CardProps)
+function ApplicationCard({company,status,onDelete,onStatusChange}:CardProps)
 {
 return(
   <div>
     <p> 
       {company}-{status}
       <button onClick={onDelete}>Delete</button>
+      <select value={status} onChange={(e)=> onStatusChange(e.target.value)}>
+            <option value="Applied">Applied</option>
+            <option value="Interview">Interview</option>
+            <option value="Offer">Offer</option>
+            <option value="Rejected">Rejected</option>
+      </select>
     </p>
   </div>
 );
@@ -73,7 +80,26 @@ function App()
     setApplications(applications.filter((app)=> app.id!==id));
   }
 
+  async function updateStatus(id:number,newStatus:string)
+  {
+    const result= await fetch("http://localhost:3000/applications/"+id ,{
+      method:"PATCH",
+      headers: { "Content-Type": "application/json" },
+      body:JSON.stringify({
+        status:newStatus,
+      }),
+    });
 
+    if(!result.ok)
+    {
+      alert("Failed to edit status!");
+      return;
+    }
+    // the condition means get all the applications and when u see one 
+    //that matches app.id===id 'replace' it with a new object that has the same values but different status else return the same application
+    setApplications(applications.map((app)=> app.id===id ? {...app,status:newStatus}: app))
+
+  }
 
 
 const [company,setCompany]= useState("");
@@ -89,7 +115,7 @@ const [company,setCompany]= useState("");
         </p>
 
         <div>
-          {applications.map((app)=> <ApplicationCard key={app.id} company={app.company} status={app.status} onDelete={()=> deleteApplication(app.id)}/>)}
+          {applications.map((app)=> <ApplicationCard key={app.id} company={app.company} status={app.status} onDelete={()=> deleteApplication(app.id)} onStatusChange={(status)=> updateStatus(app.id,status)}/>)}
         </div>
 
         <div>
