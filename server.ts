@@ -1,10 +1,12 @@
 import express from "express";
 import { pool } from "./db.ts";
+ import cors from "cors";
 
 const VALID_STATUSES = ["Applied", "Interview", "Offer", "Rejected"];
 
 
 const app = express();
+ app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -74,10 +76,6 @@ app.patch("/applications/:id", async (req, res) => {
 
 app.delete("/applications/:id",async (req,res) =>{
   const id=Number(req.params.id);
-  if (!Number.isInteger(id)) {
-  res.status(400).json({ error: "Invalid id" });
-  return;
-}
   if (!Number.isInteger(id)) {
   res.status(400).json({ error: "Invalid id" });
   return;

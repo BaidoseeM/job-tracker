@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react";
 
 interface Application
 {
@@ -26,12 +26,18 @@ function App()
 {
   const name : string = "Mahmoud";
 
-  const [applications,setApplications]=useState<Application[]>
-  ([
-  { id: 1, company: "Google", status: "Applied" },
-  { id: 2, company: "Wix", status: "Interview" },
-  { id: 3, company: "Monday", status: "Offer" }
-  ]);
+  const [applications,setApplications]=useState<Application[]>([]); //empty applications at first 
+ 
+  useEffect(() => {
+    async function load()
+    {
+      const result= await fetch("http://localhost:3000/applications");
+      const data= await result.json();
+      setApplications(data);
+    }
+    load();
+  },[])
+
 
 const [company,setCompany]= useState("");
 
@@ -44,7 +50,7 @@ const [company,setCompany]= useState("");
         <p>
           Hi {name} you have {applications.length} Applications!
         </p>
-        
+
         <div>
           {applications.map((app)=> <ApplicationCard key={app.id} company={app.company} status={app.status}/>)}
         </div>
