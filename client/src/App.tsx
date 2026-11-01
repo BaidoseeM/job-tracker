@@ -11,13 +11,17 @@ interface CardProps
 {
   company : string , 
   status : string ,
+  onDelete : ()=> void,
 }
 
-function ApplicationCard({company,status}:CardProps)
+function ApplicationCard({company,status,onDelete}:CardProps)
 {
 return(
   <div>
-    <p>{company}-{status}</p>
+    <p> 
+      {company}-{status}
+      <button onClick={onDelete}>Delete</button>
+    </p>
   </div>
 );
 }
@@ -48,11 +52,25 @@ function App()
         company:company,
         role:"Developer",
       }),
-    })
+    });
 
     const data=await result.json();
     setApplications([...applications,data]);
     setCompany("");
+  }
+
+  async function deleteApplication(id : number)
+  {
+    const result =await fetch ("http://localhost:3000/applications/"+id ,{
+      method : "DELETE",
+    });
+    if(!result.ok)
+    {
+      alert("Failed to delete application");
+      return;
+    }
+
+    setApplications(applications.filter((app)=> app.id!==id));
   }
 
 
@@ -71,7 +89,7 @@ const [company,setCompany]= useState("");
         </p>
 
         <div>
-          {applications.map((app)=> <ApplicationCard key={app.id} company={app.company} status={app.status}/>)}
+          {applications.map((app)=> <ApplicationCard key={app.id} company={app.company} status={app.status} onDelete={()=> deleteApplication(app.id)}/>)}
         </div>
 
         <div>
