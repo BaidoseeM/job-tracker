@@ -35,6 +35,7 @@ return(
 
 function App()
 {
+  const name : string = "Mahmoud";
 
   const [applications,setApplications]=useState<Application[]>([]); //empty applications at first 
  // useEffect is only when the page loads (fetch data using GET)
