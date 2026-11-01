@@ -27,7 +27,7 @@ function App()
   const name : string = "Mahmoud";
 
   const [applications,setApplications]=useState<Application[]>([]); //empty applications at first 
- 
+ // useEffect is only when the page loads (fetch data using GET)
   useEffect(() => {
     async function load()
     {
@@ -37,6 +37,25 @@ function App()
     }
     load();
   },[])
+
+  async function addApplication()
+  {
+    const result = await fetch("http://localhost:3000/applications" , {
+      method:"POST",
+      headers:{ "Content-Type": "application/json"},
+      body : JSON.stringify({
+        userId:1,
+        company:company,
+        role:"Developer",
+      }),
+    })
+
+    const data=await result.json();
+    setApplications([...applications,data]);
+    setCompany("");
+  }
+
+
 
 
 const [company,setCompany]= useState("");
@@ -59,9 +78,8 @@ const [company,setCompany]= useState("");
 
           <input value={company} onChange={(e)=> setCompany(e.target.value)}/>
 
-          <button onClick={()=>{ setApplications([...applications,{id:applications.length+1,company:company,status:'Applied'}]); setCompany("")}}>
+          <button onClick={addApplication}>
           Add application
-          
           </button>
         </div>
 
