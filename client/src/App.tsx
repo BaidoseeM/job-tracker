@@ -1,34 +1,41 @@
 import { useState, useEffect } from "react";
+import "./App.css";
+type Status = "Applied" | "Interview" | "Offer" | "Rejected";
 
 interface Application
 {
   id :  number ,
   company : string , 
-  status : string, 
+  status : Status, 
+  role :string , 
 }
 
 interface CardProps
 {
   company : string , 
-  status : string ,
+  status : Status ,
+  role : string , 
   onDelete : ()=> void,
-  onStatusChange: (newStatus: string) => void,
+  onStatusChange: (newStatus: Status) => void,
 }
 
-function ApplicationCard({company,status,onDelete,onStatusChange}:CardProps)
+function ApplicationCard({company,status,role,onDelete,onStatusChange}:CardProps)
 {
 return(
-  <div>
-    <p> 
-      {company}-{status}
-      <button onClick={onDelete}>Delete</button>
-      <select value={status} onChange={(e)=> onStatusChange(e.target.value)}>
-            <option value="Applied">Applied</option>
-            <option value="Interview">Interview</option>
-            <option value="Offer">Offer</option>
-            <option value="Rejected">Rejected</option>
-      </select>
-    </p>
+  <div className="card"> 
+        <span>
+           {company} - <span className={`badge ${status}`} > {status}</span> - {role}
+        </span>
+
+        <div className="card-actions">
+              <button  className="delete-btn" onClick={onDelete}>Delete</button>
+              <select value={status} onChange={(e)=> onStatusChange(e.target.value as Status)}>
+                  <option value="Applied">Applied</option>
+                  <option value="Interview">Interview</option>
+                  <option value="Offer">Offer</option>
+                  <option value="Rejected">Rejected</option>
+              </select>
+         </div>
   </div>
 );
 }
@@ -57,13 +64,19 @@ function App()
       body : JSON.stringify({
         userId:1,
         company:company,
-        role:"Developer",
+        role:role,
       }),
     });
+   
+    if (!result.ok) {
+  alert("Please fill in company and role");
+  return;
+    }
 
     const data=await result.json();
     setApplications([...applications,data]);
     setCompany("");
+    setRole("");
   }
 
   async function deleteApplication(id : number)
@@ -80,7 +93,7 @@ function App()
     setApplications(applications.filter((app)=> app.id!==id));
   }
 
-  async function updateStatus(id:number,newStatus:string)
+  async function updateStatus(id:number,newStatus:Status)
   {
     const result= await fetch("http://localhost:3000/applications/"+id ,{
       method:"PATCH",
@@ -103,10 +116,11 @@ function App()
 
 
 const [company,setCompany]= useState("");
+const [role,setRole]= useState("");
 
   return (
     
-      <div>
+      <div className="container">
         <h1>
           My Applications
         </h1>
@@ -115,13 +129,12 @@ const [company,setCompany]= useState("");
         </p>
 
         <div>
-          {applications.map((app)=> <ApplicationCard key={app.id} company={app.company} status={app.status} onDelete={()=> deleteApplication(app.id)} onStatusChange={(status)=> updateStatus(app.id,status)}/>)}
+          {applications.map((app)=> <ApplicationCard key={app.id} company={app.company} status={app.status} role={app.role} onDelete={()=> deleteApplication(app.id)} onStatusChange={(status)=> updateStatus(app.id,status)}/>)}
         </div>
 
-        <div>
-
-          <input value={company} onChange={(e)=> setCompany(e.target.value)}/>
-
+        <div className="form">
+          <input value={company}  placeholder="Company" onChange={(e)=> setCompany(e.target.value)}/>
+          <input value={role} placeholder="Role" onChange={(e)=>setRole(e.target.value)}/>
           <button onClick={addApplication}>
           Add application
           </button>
