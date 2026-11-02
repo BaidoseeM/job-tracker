@@ -8,7 +8,7 @@ Built with TypeScript, Express, and PostgreSQL.
 - **Language:** TypeScript
 - **Backend:** Node.js, Express (REST API)
 - **Database:** PostgreSQL
-- **Frontend:** React *(in progress)*
+- **Frontend:** React (Vite)
 
 ## Features
 
@@ -46,3 +46,10 @@ Built with TypeScript, Express, and PostgreSQL.
    ```
    npm run dev
    ```
+5. In a second terminal, start the frontend:
+   ```
+   cd client
+   npm install
+   npm run dev
+   ```
+   Then open http://localhost:5173
